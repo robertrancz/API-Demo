@@ -1,0 +1,20 @@
+﻿
+@{
+    ViewData["Title"] = "CallUnifiApi";
+}
+
+@model UnifiApiDemo.Models.UnifiAPIViewModel
+
+<h2>UNIFI API - Convert to MZML</h2>
+
+
+    @{ Html.BeginForm("CallUnifiApi", "Home", FormMethod.Post); }
+    <div>
+        @Html.TextBoxFor(Model => Model.UnifiServerURI);
+        @Html.TextBoxFor(Model => Model.EndpointAddress);
+        @Html.DropDownListFor(Model => Model.SelectedAnalyticalDataType, Model.AnalyticalDataTypes);
+
+        <input type="submit" value="Convert to MZML" />
+    </div>
+    @{ Html.EndForm(); }
+
