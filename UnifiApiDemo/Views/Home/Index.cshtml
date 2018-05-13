@@ -77,25 +77,58 @@
 </div>
 
 <div class="row">
-    <h2>Folders</h2>
+    <h2>UNIFI Folders</h2>
+    <div id="divFolderLoader" style="display:none;">
+        <img src="~/images/ajax-loader.gif" alt="Loader" />
+    </div>
     <div class="row">
-        <div id="tree"></div>
+        <div id="folderTree"></div>
+        <div id="divLoader" style="display:none;">
+            <img src="~/images/ajax-loader.gif" alt="Loader" />
+        </div>
+        <div id="folderItems"></div>
     </div>
 </div>
 
 @section Scripts
-    {
+{
     <script type="text/javascript">
-        $(function() {
-            $.ajax("@Url.Action("GetFolderNodes", "Home")")
-                .done(function(resp) {
-                    $("#tree").treeview({
-                        data: resp
-                    });
+        $(function () {
+
+            $.ajaxSetup({
+                beforeSend: function () {
+                    $('#divLoader').show();
+                },
+                complete: function () {
+                    $('#divLoader').hide();
+                },
+            });
+            
+            $.ajax("@Url.Action("GetFolderNodes", "Home")")                
+                .done(function (resp) {                    
+                    $("#folderTree").treeview({
+                        data: resp,
+                        onNodeSelected: function (event, data) {
+                            if (data) {                                
+                                var link = "@Url.Action("GetFolderItems", "Home", new { folderId = "replace" })";
+                                link = link.replace("replace", data.id);
+                                $.ajax(link)
+                                    .done(function (resp) {                                        
+                                        var folderItemsDiv = $('#folderItems');
+                                        folderItemsDiv.html('');
+                                        folderItemsDiv.html(resp);                                        
+                                    })
+                                    .fail(function (error) {
+                                        console.log(error);
+                                    });
+                            }
+                        }
+                    });    
                 })
-                .fail(function(error) {
+                .fail(function (error) {                    
                     console.log(error);
                 });
         });
+        
     </script>
 }

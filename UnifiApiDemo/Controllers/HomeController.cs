@@ -21,8 +21,6 @@ namespace UnifiApiDemo.Controllers
               new SelectListItem() { Text = "HDMSe", Value = "HDMSe" },
             };
 
-
-
             return View(model);
         }
 
@@ -96,7 +94,7 @@ namespace UnifiApiDemo.Controllers
             {
                 Console.WriteLine(ex.Message);
             }                        
-
+            
             return Json(foldersViewModel);
         }
 
@@ -110,6 +108,19 @@ namespace UnifiApiDemo.Controllers
                     ParentId = l.ParentId,
                     Children = GetChildren(folders, l.Id)
                 }).ToList();
+        }
+
+        public PartialViewResult GetFolderItems(string folderId)
+        {
+            var folderItems = new List<Item>();
+            Guid result = Guid.Empty;
+
+            if (Guid.TryParse(folderId, out result))
+            {
+                folderItems = new UnifiFolders().GetItems(result).Result;
+            }
+
+            return PartialView("~/Views/Home/_FolderItems.cshtml", folderItems);
         }
     }
 }
