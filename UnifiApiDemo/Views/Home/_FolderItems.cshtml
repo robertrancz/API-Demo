@@ -1,4 +1,6 @@
-﻿@model IEnumerable<UnifiApiDemo.Business.Model.Item>
+﻿@using System.Composition
+@using UnifiApiDemo.Business.Model
+@model IEnumerable<UnifiApiDemo.Business.Model.Item>
 
 @if (Model != null && Model.Any())
 {
@@ -26,7 +28,14 @@
 {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Id)
+                @if (item.Type == ItemType.SampleResult)
+                {
+                    @Html.ActionLink("Export to MzML\n"+item.Id, "ConvertToMzML", new { resultId = item.Id }, new { @class = "btn btn-primary glyphicon glyphicon-export" })
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.Id)
+                }
             </td>
             <td>
                 <strong>@Html.DisplayFor(modelItem => item.Type)</strong>
