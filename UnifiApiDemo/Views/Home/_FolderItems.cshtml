@@ -4,55 +4,51 @@
 
 @if (Model != null && Model.Any())
 {
-<h2>Selected folder items</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Type)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model)
-{
-        <tr>
-            <td>
-                @if (item.Type == ItemType.SampleResult)
-                {
-                    @Html.ActionLink("Export to MzML\n"+item.Id, "ConvertToMzML", new { resultId = item.Id }, new { @class = "btn btn-primary glyphicon glyphicon-export" })
-                }
-                else
-                {
-                    @Html.DisplayFor(modelItem => item.Id)
-                }
-            </td>
-            <td>
-                <strong>@Html.DisplayFor(modelItem => item.Type)</strong>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            @*<td>
-            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-        </td>*@
-        </tr>
-}
-    </tbody>
-</table>
+    <h2>Selected folder items</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Type)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @if (item.Type == ItemType.SampleResult)
+                        {
+                            @*<a data-toggle="modal" href="@Url.Action("ConvertToMzML", "Home", new { resultId = item.Id })" data-target="#myModal">@item.Id</a>*@                           
+                            @Html.ActionLink("Export to MzML\n" + item.Id, "ConvertToMzML", new { resultId = item.Id }, new { @class = "btn btn-primary glyphicon glyphicon-export", onclick = "waitingDialog.show('Convert to MzML. This might take a while...');" })
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(modelItem => item.Id)
+                        }
+                    </td>
+                    <td>
+                        <strong>@Html.DisplayFor(modelItem => item.Type)</strong>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>   
 }

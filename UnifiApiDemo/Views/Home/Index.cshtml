@@ -90,11 +90,20 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            This may take a while...
+        </div>
+    </div>
+</div>
+
 @section Scripts
-{
+    {
     <script type="text/javascript">
         $(function () {
-
+            
             $.ajaxSetup({
                 beforeSend: function () {
                     $('#divLoader').show();
@@ -103,31 +112,41 @@
                     $('#divLoader').hide();
                 },
             });
-            
-            $.ajax("@Url.Action("GetFolderNodes", "Home")")                
-                .done(function (resp) {                    
+
+            $.ajax("@Url.Action("GetFolderNodes", "Home")")
+                .done(function (resp) {
                     $("#folderTree").treeview({
                         data: resp,
                         onNodeSelected: function (event, data) {
-                            if (data) {                                
+                            if (data) {
                                 var link = "@Url.Action("GetFolderItems", "Home", new { folderId = "replace" })";
                                 link = link.replace("replace", data.id);
                                 $.ajax(link)
-                                    .done(function (resp) {                                        
+                                    .done(function (resp) {
                                         var folderItemsDiv = $('#folderItems');
                                         folderItemsDiv.html('');
-                                        folderItemsDiv.html(resp);                                        
+                                        folderItemsDiv.html(resp);
                                     })
                                     .fail(function (error) {
                                         console.log(error);
                                     });
                             }
                         }
-                    });    
+                    });
                 })
-                .fail(function (error) {                    
+                .fail(function (error) {
                     console.log(error);
                 });
+
+            $('.btn btn-primary glyphicon glyphicon-export').click(function () {
+                $.ajax("@Url.Action("ConvertToMzML", "Home")")
+                    .done(function (resp) {
+
+                    })
+                    .fail(function (error) {
+                        console.log(error);
+                    })
+            });
         });
         
     </script>
