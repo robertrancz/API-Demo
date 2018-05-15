@@ -37,7 +37,7 @@ namespace UnifiApiDemo.Business
         {
             if(folderId == Guid.Empty)
             {
-                throw new ArgumentException("The folder ID is required!", "folderId");
+                throw new ArgumentException("The folder ID is required!", nameof(folderId));
             }
 
             ApiUtil api = new ApiUtil();

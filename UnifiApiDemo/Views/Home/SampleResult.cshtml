@@ -1,0 +1,86 @@
+﻿@model UnifiApiDemo.Models.SampleResultViewModel
+
+@{
+    ViewData["Title"] = "Sample Result Details";
+}
+
+<br /><br />
+          <div>
+              <h4>Sample Result Details</h4>
+              <hr />
+              <dl class="dl-horizontal">
+                  <dt>
+                      @Html.DisplayNameFor(model => model.Id)
+                  </dt>
+                  <dd>
+                      @Html.DisplayFor(model => model.Id)
+                  </dd>
+                  <dt>
+                      @Html.DisplayNameFor(model => model.Name)
+                  </dt>
+                  <dd>
+                      @Html.DisplayFor(model => model.Name)
+                  </dd>
+                  <dt>
+                      @Html.DisplayNameFor(model => model.Description)
+                  </dt>
+                  <dd>
+                      @Html.DisplayFor(model => model.Description)
+                  </dd>
+              </dl>
+
+          </div>
+          <br />
+          <div>
+              <h4>Sample Details</h4>
+              <hr />
+              <dl class="dl-horizontal">
+                  <dt>@Html.DisplayNameFor(model => model.Sample.Id)</dt>
+                  <dd>@Html.DisplayFor(model => model.Sample.Id)</dd>
+                  <dt>@Html.DisplayNameFor(model => model.Sample.Name)</dt>
+                  <dd>@Html.DisplayFor(model => model.Sample.Name)</dd>
+                  <dt>@Html.DisplayNameFor(model => model.Sample.Description)</dt>
+                  <dd>@Html.DisplayFor(model => model.Sample.Description)</dd>
+                  <dt>@Html.DisplayNameFor(model => model.Sample.SampleType)</dt>
+                  <dd>@Html.DisplayFor(model => model.Sample.SampleType)</dd>
+                  <dt>@Html.DisplayNameFor(model => model.Sample.AcquisitionStartTime)</dt>
+                  <dd>@Html.DisplayFor(model => model.Sample.AcquisitionStartTime)</dd>
+                  <dt>@Html.DisplayNameFor(model => model.Sample.WellPosition)</dt>
+                  <dd>@Html.DisplayFor(model => model.Sample.WellPosition)</dd>
+                  <dt>@Html.DisplayNameFor(model => model.Sample.InjectionVolume)</dt>
+                  <dd>@Html.DisplayFor(model => model.Sample.InjectionVolume)</dd>
+                  <dt>@Html.DisplayNameFor(model => model.Sample.ProcessingOptions)</dt>
+                  <dd>@Html.DisplayFor(model => model.Sample.ProcessingOptions)</dd>
+                  <dt>@Html.DisplayNameFor(model => model.Sample.ProcessingFunction)</dt>
+                  <dd>@Html.DisplayFor(model => model.Sample.ProcessingFunction)</dd>
+                  <dt>@Html.DisplayNameFor(model => model.Sample.InjectionId)</dt>
+                  <dd>@Html.DisplayFor(model => model.Sample.InjectionId)</dd>
+              </dl>
+          </div>
+          <br /><br />
+<div>
+    <form asp-controller="Home" asp-action="SaveForm" data-ajax-begin="onBegin" data-ajax-complete="onComplete"
+          data-ajax-failure="onFailed" data-ajax-success="onSuccess" data-ajax="true" data-ajax-method="POST">
+        @Html.ActionLink("Export to MzML", "ConvertToMzML", new {resultId = Model.Id}, new {@class = "btn btn-primary glyphicon glyphicon-export", onclick = "waitingDialog.show('Convert to MzML. This might take up to an hour...');" })
+    </form>
+    @*@Html.ActionLink("Edit", "Edit", new {/* id = Model.PrimaryKey */})*@ |
+    <a asp-action="Index" class="btn btn-primary glyphicon ">Back to Folders</a>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        var onComplete = function () {
+            waitingDialog.hide();
+        };
+
+        var onSuccess = function (context) {
+            waitingDialog.hide();
+        };
+
+        var onFailed = function (context) {
+            waitingDialog.hide();
+
+    </script>
+}

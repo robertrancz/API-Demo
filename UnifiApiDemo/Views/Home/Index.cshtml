@@ -101,9 +101,9 @@
 
 @section Scripts
     {
-    <script type="text/javascript">
+<script type="text/javascript">
         $(function () {
-            
+
             $.ajaxSetup({
                 beforeSend: function () {
                     $('#divLoader').show();
@@ -138,16 +138,19 @@
                     console.log(error);
                 });
 
-            $('.btn btn-primary glyphicon glyphicon-export').click(function () {
+            @*$('.btn btn-primary glyphicon glyphicon-export').click(function () {
                 $.ajax("@Url.Action("ConvertToMzML", "Home")")
                     .done(function (resp) {
-
+                        waitingDialog.hide();
+                        alert("Done!");
                     })
                     .fail(function (error) {
                         console.log(error);
-                    })
-            });
+                        waitingDialog.hide();
+                        alert("Error!");
+                    });
+            });*@
         });
-        
-    </script>
+
+</script>
 }

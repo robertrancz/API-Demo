@@ -17,14 +17,11 @@ namespace UnifiApiDemo.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
-        private Process msConvertProcess;
-        private int elapsedTime;
-        private bool eventHandled;
+        private readonly IHostingEnvironment hostingEnvironment;
 
         public HomeController(IHostingEnvironment hostingEnvironment)
         {
-            _hostingEnvironment = hostingEnvironment;
+            this.hostingEnvironment = hostingEnvironment;
         }
 
         public ActionResult CallUnifiApi()
@@ -137,53 +134,67 @@ namespace UnifiApiDemo.Controllers
             return PartialView("~/Views/Home/_FolderItems.cshtml", folderItems);
         }
 
+        public async Task<IActionResult> SampleResult(Guid resultId)
+        {
+            var sampleResult = await new SampleResultsApi().GetSampleResult(resultId);
+
+            var model = new SampleResultViewModel()
+            {
+                Id = sampleResult.Id,
+                Description = sampleResult.Description,
+                Name = sampleResult.Name,
+                Sample = sampleResult.Sample
+            };
+            
+
+            return View(model);
+        }
+        
         public void ConvertToMzML(Guid resultId)
         {
-            string pass = "";
+            var msConvertProcess = new Process();
+            string pass = "spring2018";
             System.Security.SecureString securePassword = new System.Security.SecureString();
             foreach (char c in pass)
                 securePassword.AppendChar(c);
-
-            msConvertProcess = new Process
+            try
             {
-                EnableRaisingEvents = true,
-                StartInfo =
+                msConvertProcess.StartInfo = new ProcessStartInfo()
                 {
-                    UserName = "",
-                    Domain = "",
+                    UserName = "rorran",
+                    Domain = "CORP",
                     Password = securePassword,
-                    WorkingDirectory = Path.Combine(_hostingEnvironment.ContentRootPath, "Lib"),
+                    //Verb = "runas",
+                    WorkingDirectory = Path.Combine(hostingEnvironment.ContentRootPath, "Lib"),
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
-                    UseShellExecute = false,                    
+                    UseShellExecute = false,
                     WindowStyle = ProcessWindowStyle.Minimized,
-                    Arguments = $"\"https://administrator:administrator42@unifiapi.waters.com:50034/unifi/v1/sampleresults({resultId})?identity=https://unifiapi.waters.com:50333&scope=unifi&secret=secret\" --zlib -v -o {Path.Combine(_hostingEnvironment.ContentRootPath, "Downloads")}",
-                    FileName = Path.Combine(_hostingEnvironment.ContentRootPath, "Lib\\msconvert.exe"),                    
-                }
-            };
-            msConvertProcess.Start();
-            msConvertProcess.Exited += MsConvertProcess_Exited;
+                    Arguments =
+                        $"\"https://administrator:administrator42@unifiapi.waters.com:50034/unifi/v1/sampleresults({resultId})?identity=https://unifiapi.waters.com:50333&scope=unifi&secret=secret\" --zlib -v -o {Path.Combine(hostingEnvironment.ContentRootPath, "Downloads")}",
+                    FileName = Path.Combine(hostingEnvironment.ContentRootPath, "Lib\\msconvert.exe"),
+                };
 
-            // Wait for Exited event, but not more than 1 hour (3600000ms).
-            const int SleepAmount = 2000;
-            while (!eventHandled)
-            {
-                elapsedTime += SleepAmount;
-                if (elapsedTime > 3600000)
+                msConvertProcess.Start();
+
+                // Wait for the process to exit, but not more than 1 hour (3600000ms).
+                if (!msConvertProcess.WaitForExit(3600000))
                 {
-                    break;
+                    msConvertProcess.Kill();
+                    string result = msConvertProcess.StandardOutput.ReadToEnd();
+                    Response.WriteAsync(result + Environment.NewLine + "Process exit code: " + msConvertProcess.ExitCode);
+                    msConvertProcess.Close();
                 }
-                Thread.Sleep(SleepAmount);                
             }
-
-            string result = msConvertProcess.StandardOutput.ReadToEnd();
-            Response.WriteAsync(result + "-" + msConvertProcess.ExitCode);
-            msConvertProcess.Close();
-        }
-
-        private void MsConvertProcess_Exited(object sender, EventArgs e)
-        {
-            eventHandled = true;            
+            catch (Exception ex)
+            {
+                Response.WriteAsync(ex.Message);
+                throw;
+            }
+            finally
+            {
+                msConvertProcess?.Close();
+            }
         }
     }
 }
