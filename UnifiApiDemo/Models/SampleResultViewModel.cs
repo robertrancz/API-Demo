@@ -14,5 +14,7 @@ namespace UnifiApiDemo.Models
         public string Description { get; internal set; }
 
         public Business.Model.Sample Sample { get; internal set; }
+
+        public bool MzmlFileExistsOnServer { get; internal set; }
     }
 }

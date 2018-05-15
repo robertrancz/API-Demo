@@ -90,15 +90,6 @@
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            This may take a while...
-        </div>
-    </div>
-</div>
-
 @section Scripts
     {
 <script type="text/javascript">
@@ -137,19 +128,6 @@
                 .fail(function (error) {
                     console.log(error);
                 });
-
-            @*$('.btn btn-primary glyphicon glyphicon-export').click(function () {
-                $.ajax("@Url.Action("ConvertToMzML", "Home")")
-                    .done(function (resp) {
-                        waitingDialog.hide();
-                        alert("Done!");
-                    })
-                    .fail(function (error) {
-                        console.log(error);
-                        waitingDialog.hide();
-                        alert("Error!");
-                    });
-            });*@
         });
 
 </script>

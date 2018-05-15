@@ -30,8 +30,6 @@
                     <td>
                         @if (item.Type == ItemType.SampleResult)
                         {
-                            @*<a data-toggle="modal" href="@Url.Action("ConvertToMzML", "Home", new { resultId = item.Id })" data-target="#myModal">@item.Id</a>*@
-                            @*@Html.ActionLink("Export to MzML\n" + item.Id, "ConvertToMzML", new { resultId = item.Id }, new { @class = "btn btn-primary glyphicon glyphicon-export", onclick = "waitingDialog.show('Convert to MzML. This might take a while...');", target = "_blank" })*@
                             @Html.ActionLink("Details for " + item.Id, "SampleResult", new {resultId = item.Id}, new {@class = "btn btn-primary"})
                         }
                         else

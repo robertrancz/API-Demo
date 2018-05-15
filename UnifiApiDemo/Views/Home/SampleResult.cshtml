@@ -58,29 +58,42 @@
               </dl>
           </div>
           <br /><br />
-<div>
-    <form asp-controller="Home" asp-action="SaveForm" data-ajax-begin="onBegin" data-ajax-complete="onComplete"
-          data-ajax-failure="onFailed" data-ajax-success="onSuccess" data-ajax="true" data-ajax-method="POST">
-        @Html.ActionLink("Export to MzML", "ConvertToMzML", new {resultId = Model.Id}, new {@class = "btn btn-primary glyphicon glyphicon-export", onclick = "waitingDialog.show('Convert to MzML. This might take up to an hour...');" })
-    </form>
-    @*@Html.ActionLink("Edit", "Edit", new {/* id = Model.PrimaryKey */})*@ |
-    <a asp-action="Index" class="btn btn-primary glyphicon ">Back to Folders</a>
-</div>
+                <div>
+                    @if(Model.MzmlFileExistsOnServer)
+                    {
+                        <button class="btn btn-primary glyphicon glyphicon-export disabled" value="Convert to MzML">Convert to MzML</button>                                
+                        @Html.ActionLink("Download MzML file", "DownloadMzmlFile", new { fileName = Model.Name }, new { @class = "btn btn-primary glyphicon glyphicon-download-alt", @id = "downloadFileButton" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Convert to MzML", "ConvertToMzML", new { resultId = Model.Id }, new { @class = "btn btn-primary glyphicon glyphicon-export", @id = "convertButton", @target = "_blank" })        
+                        <button class="btn btn-primary glyphicon glyphicon-download-alt disabled" value="Download MzML file">Download MzML file</button>
+                    }                    
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a asp-action="Index" class="btn btn-primary glyphicon ">Back to Folders</a>
+                    
+                    
+                    
+                </div>
 
 @section Scripts
 {
     <script type="text/javascript">
 
-        var onComplete = function () {
-            waitingDialog.hide();
-        };
+        $('#convertButton').click(function () {
+            waitingDialog.show('Convert to MzML. This might take up to an hour...\n The generated file size usually is very large.');
+            setTimeout(function () { waitingDialog.hide(); }, 15000);
 
-        var onSuccess = function (context) {
-            waitingDialog.hide();
-        };
-
-        var onFailed = function (context) {
-            waitingDialog.hide();
+            @*var link = "@Url.Action("ConvertToMzML", "Home", new { resultId = Model.Id })";            
+             $.ajax(link)
+                 .done(function (resp) {
+                     $(resp).modal.show();
+                })
+                 .fail(function (error) {
+                     alert(error);
+                    console.log(error);
+                });*@
+        });
 
     </script>
 }

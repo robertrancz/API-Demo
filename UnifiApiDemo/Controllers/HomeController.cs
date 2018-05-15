@@ -22,32 +22,7 @@ namespace UnifiApiDemo.Controllers
         public HomeController(IHostingEnvironment hostingEnvironment)
         {
             this.hostingEnvironment = hostingEnvironment;
-        }
-
-        public ActionResult CallUnifiApi()
-        {
-            UnifiAPIViewModel model = new UnifiAPIViewModel();
-            model.AnalyticalDataTypes = new List<SelectListItem>()
-            { new SelectListItem() { Text = "MSe", Value = "MSe", Selected = true },
-              new SelectListItem() { Text = "HDMSe", Value = "HDMSe" },
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public ActionResult CallUnifiApi(UnifiAPIViewModel model)
-        {
-            try
-            {
-                SampleResultToMzMLConverter.ConvertToMzml(model);
-            }
-            catch(Exception ex)
-            {
-
-            }
-            return View(model);
-        }
+        } 
 
         public IActionResult Index()
         {
@@ -62,14 +37,14 @@ namespace UnifiApiDemo.Controllers
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
+            ViewData["Message"] = "Unifi Web API client application. MzML converter.";
 
             return View();
         }
 
         public IActionResult Contact()
         {
-            ViewData["Message"] = "Your contact page.";
+            ViewData["Message"] = "Robert Rancz";
 
             return View();
         }
@@ -143,26 +118,29 @@ namespace UnifiApiDemo.Controllers
                 Id = sampleResult.Id,
                 Description = sampleResult.Description,
                 Name = sampleResult.Name,
-                Sample = sampleResult.Sample
+                Sample = sampleResult.Sample,
+                MzmlFileExistsOnServer = System.IO.File.Exists(Path.Combine(hostingEnvironment.ContentRootPath, $"Downloads\\{sampleResult.Name}.mzml"))
             };
             
 
             return View(model);
         }
         
-        public void ConvertToMzML(Guid resultId)
+        public PartialViewResult ConvertToMzML(Guid resultId)
         {
             var msConvertProcess = new Process();
-            string pass = "spring2018";
+            string pass = "";
             System.Security.SecureString securePassword = new System.Security.SecureString();
             foreach (char c in pass)
                 securePassword.AppendChar(c);
+
+            var model = new ModalDialogViewModel() { Title = "MzML Conversion Result" };
             try
             {
                 msConvertProcess.StartInfo = new ProcessStartInfo()
                 {
-                    UserName = "rorran",
-                    Domain = "CORP",
+                    UserName = "",
+                    Domain = "",
                     Password = securePassword,
                     //Verb = "runas",
                     WorkingDirectory = Path.Combine(hostingEnvironment.ContentRootPath, "Lib"),
@@ -184,17 +162,49 @@ namespace UnifiApiDemo.Controllers
                     string result = msConvertProcess.StandardOutput.ReadToEnd();
                     Response.WriteAsync(result + Environment.NewLine + "Process exit code: " + msConvertProcess.ExitCode);
                     msConvertProcess.Close();
+                    model.MainContent = "Conversion aborted. The operation did not finish after 1 hour.\nPlease try again later.";
+                    model.AdditionalContent = "This usually happens if the server is too busy or becomes unresponsive due to high load.";
+                }
+
+                if (msConvertProcess.ExitCode == 0)
+                {
+                    model.MainContent = "Conversion successful. You may download the mzml file.";
+                    model.AdditionalContent = "";
+                }
+                else
+                {
+                    model.MainContent = "Conversion process terminated unexpectedly.";
+                    model.AdditionalContent = $"Process exit code: {msConvertProcess.ExitCode}";
                 }
             }
             catch (Exception ex)
             {
-                Response.WriteAsync(ex.Message);
+                model.MainContent = "An error occured.";
+                model.AdditionalContent = ex.Message;
                 throw;
             }
             finally
             {
                 msConvertProcess?.Close();
+            }            
+
+            return PartialView("~/Views/Home/_ModalWindow.cshtml", model);
+        }
+
+        public async Task<IActionResult> DownloadMzmlFile(string fileName)
+        {
+            string filePath = Path.Combine(hostingEnvironment.ContentRootPath, $"Downloads\\{fileName}.mzml");
+            if (System.IO.File.Exists(filePath))
+            {
+                var memoryStream = new MemoryStream();
+                using (var fileStream = new FileStream(filePath, FileMode.Open))
+                {
+                    await fileStream.CopyToAsync(memoryStream);
+                }
+                memoryStream.Position = 0;
+                return File(memoryStream, "application/octet-stream", $"{fileName}.mzml");
             }
+            return Json($"The {fileName} file was not found. Please convert first.");
         }
     }
 }
