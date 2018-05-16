@@ -61,15 +61,15 @@
                 <div>
                     @if(Model.MzmlFileExistsOnServer)
                     {
-                        <button class="btn btn-primary glyphicon glyphicon-export disabled" value="Convert to MzML">Convert to MzML</button>                                
-                        @Html.ActionLink("Download MzML file", "DownloadMzmlFile", new { fileName = Model.Name }, new { @class = "btn btn-primary glyphicon glyphicon-download-alt", @id = "downloadFileButton" })
+                        <button class="btn btn-primary glyphicon glyphicon-export disabled" value="Convert to MzML" data-toggle="tooltip" data-placement="top" title="There is already a MzML file available on the server for this sample. Please press the download button.">&nbsp;Convert to MzML</button>
+                        @Html.ActionLink(" Download MzML file", "DownloadMzmlFile", new { fileName = Model.Name }, new { @class = "btn btn-primary glyphicon glyphicon-download-alt", @id = "downloadFileButton" })
                     }
                     else
                     {
-                        @Html.ActionLink("Convert to MzML", "ConvertToMzML", new { resultId = Model.Id }, new { @class = "btn btn-primary glyphicon glyphicon-export", @id = "convertButton", @target = "_blank" })        
-                        <button class="btn btn-primary glyphicon glyphicon-download-alt disabled" value="Download MzML file">Download MzML file</button>
+                        @Html.ActionLink(" Convert to MzML", "ConvertToMzML", new { resultId = Model.Id }, new { @class = "btn btn-primary glyphicon glyphicon-export", @id = "convertButton", @target = "_blank", data_toggle = "tooltip", data_placement = "top", title = "Once the file will be created, the download button will get active." })
+                        <button class="btn btn-primary glyphicon glyphicon-download-alt disabled" value="Download MzML file" data-toggle="tooltip" data-placement="top" title="There is no MzML file available on the server for this sample. Please press the convert button.">&nbsp;Download MzML file</button>
                     }                    
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <a asp-action="Index" class="btn btn-primary glyphicon ">Back to Folders</a>
                     
                     
@@ -93,6 +93,10 @@
                      alert(error);
                     console.log(error);
                 });*@
+        });
+
+        $(function() {
+            $('[data-toggle="tooltip"]').tooltip();
         });
 
     </script>
