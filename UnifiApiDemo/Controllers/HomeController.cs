@@ -26,7 +26,7 @@ namespace UnifiApiDemo.Controllers
 
         public IActionResult Index()
         {
-            var folders = new UnifiFolders().GetFolders();
+            var folders = new FoldersApiClient().GetFolders();
             return View();
         }
 
@@ -60,7 +60,7 @@ namespace UnifiApiDemo.Controllers
 
             try
             {
-                List<Folder> folders = await new UnifiFolders().GetFolders();
+                List<Folder> folders = await new FoldersApiClient().GetFolders();
 
                 if (!string.IsNullOrWhiteSpace(filter))
                 {
@@ -103,7 +103,7 @@ namespace UnifiApiDemo.Controllers
 
             if (Guid.TryParse(folderId, out result))
             {
-                folderItems = new UnifiFolders().GetItems(result).Result;
+                folderItems = new FoldersApiClient().GetItems(result).Result;
             }
             
             return PartialView("~/Views/Home/_FolderItems.cshtml", folderItems);
@@ -111,7 +111,7 @@ namespace UnifiApiDemo.Controllers
 
         public async Task<IActionResult> SampleResult(Guid resultId)
         {
-            var sampleResult = await new SampleResultsApi().GetSampleResult(resultId);
+            var sampleResult = await new SampleResultsApiClient().GetSampleResult(resultId);
 
             var model = new SampleResultViewModel()
             {
@@ -129,7 +129,7 @@ namespace UnifiApiDemo.Controllers
         public PartialViewResult ConvertToMzML(Guid resultId)
         {
             var msConvertProcess = new Process();
-            string pass = "";
+            string pass = "spring2018";
             System.Security.SecureString securePassword = new System.Security.SecureString();
             foreach (char c in pass)
                 securePassword.AppendChar(c);
@@ -139,24 +139,26 @@ namespace UnifiApiDemo.Controllers
             {
                 msConvertProcess.StartInfo = new ProcessStartInfo()
                 {
-                    UserName = "",
-                    Domain = "",
-                    Password = securePassword,
-                    //Verb = "runas",
-                    WorkingDirectory = Path.Combine(hostingEnvironment.ContentRootPath, "Lib"),
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
+                    //UserName = "rorran",
+                    //Domain = "CORP",
+                    //Password = securePassword,
+                    ////Verb = "runas",
+                    //WorkingDirectory = Path.Combine(hostingEnvironment.ContentRootPath, "Lib"),
+                    //RedirectStandardOutput = true,
+                    //RedirectStandardInput = true,
+                    //RedirectStandardError = true,
+                    UseShellExecute = true,
                     WindowStyle = ProcessWindowStyle.Minimized,
                     Arguments =
-                        $"\"https://administrator:administrator42@unifiapi.waters.com:50034/unifi/v1/sampleresults({resultId})?identity=https://unifiapi.waters.com:50333&scope=unifi&secret=secret\" --zlib -v -o {Path.Combine(hostingEnvironment.ContentRootPath, "Downloads")}",
+                        $"\"https://administrator:administrator42@unifiapi.waters.com:50034/unifi/v1/sampleresults({resultId})?identity=https://unifiapi.waters.com:50333&scope=unifi&secret=secret\"  --32 --zlib --filter \"peakPicking true 1-\" --filter \"zeroSamples removeExtra\" -v -o {Path.Combine(hostingEnvironment.ContentRootPath, "Downloads")}",
                     FileName = Path.Combine(hostingEnvironment.ContentRootPath, "Lib\\msconvert.exe"),
                 };
 
                 msConvertProcess.Start();
 
-                // Wait for the process to exit, but not more than 1 hour (3600000ms).
-                if (!msConvertProcess.WaitForExit(3600000))
+                // Wait for the process to exit, but not more than 3 hours (10800000ms). 
+                // usually a sample has between 5000 - 8000 scans. Processing power ~3500scans/hour.
+                if (!msConvertProcess.WaitForExit(10800000))
                 {
                     msConvertProcess.Kill();
                     string result = msConvertProcess.StandardOutput.ReadToEnd();
@@ -169,7 +171,7 @@ namespace UnifiApiDemo.Controllers
                 if (msConvertProcess.ExitCode == 0)
                 {
                     model.MainContent = "Conversion successful. You may download the mzml file.";
-                    model.AdditionalContent = "";
+                    model.AdditionalContent = msConvertProcess.StandardOutput.ReadToEnd();
                 }
                 else
                 {

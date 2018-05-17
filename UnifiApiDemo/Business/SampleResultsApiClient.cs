@@ -7,7 +7,7 @@ using UnifiApiDemo.Business.Model;
 
 namespace UnifiApiDemo.Business
 {
-    public class SampleResultsApi
+    public class SampleResultsApiClient
     {
         public async Task<SampleResult> GetSampleResult(Guid resultId)
         {

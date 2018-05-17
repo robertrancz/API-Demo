@@ -9,7 +9,7 @@ using UnifiApiDemo.Business.Model;
 
 namespace UnifiApiDemo.Business
 {
-    public class UnifiFolders
+    public class FoldersApiClient
     {
         public async Task<List<Folder>> GetFolders()
         {
