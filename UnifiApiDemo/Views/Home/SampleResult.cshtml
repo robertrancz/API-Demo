@@ -6,7 +6,7 @@
 
 <br /><br />
           <div>
-              <h4>Sample Result Details</h4>
+              <h3 class="text-primary">Sample Result Details</h3>
               <hr />
               <dl class="dl-horizontal">
                   <dt>
@@ -31,33 +31,45 @@
 
           </div>
           <br />
-          <div>
-              <h4>Sample Details</h4>
-              <hr />
-              <dl class="dl-horizontal">
-                  <dt>@Html.DisplayNameFor(model => model.Sample.Id)</dt>
-                  <dd>@Html.DisplayFor(model => model.Sample.Id)</dd>
-                  <dt>@Html.DisplayNameFor(model => model.Sample.Name)</dt>
-                  <dd>@Html.DisplayFor(model => model.Sample.Name)</dd>
-                  <dt>@Html.DisplayNameFor(model => model.Sample.Description)</dt>
-                  <dd>@Html.DisplayFor(model => model.Sample.Description)</dd>
-                  <dt>@Html.DisplayNameFor(model => model.Sample.SampleType)</dt>
-                  <dd>@Html.DisplayFor(model => model.Sample.SampleType)</dd>
-                  <dt>@Html.DisplayNameFor(model => model.Sample.AcquisitionStartTime)</dt>
-                  <dd>@Html.DisplayFor(model => model.Sample.AcquisitionStartTime)</dd>
-                  <dt>@Html.DisplayNameFor(model => model.Sample.WellPosition)</dt>
-                  <dd>@Html.DisplayFor(model => model.Sample.WellPosition)</dd>
-                  <dt>@Html.DisplayNameFor(model => model.Sample.InjectionVolume)</dt>
-                  <dd>@Html.DisplayFor(model => model.Sample.InjectionVolume)</dd>
-                  <dt>@Html.DisplayNameFor(model => model.Sample.ProcessingOptions)</dt>
-                  <dd>@Html.DisplayFor(model => model.Sample.ProcessingOptions)</dd>
-                  <dt>@Html.DisplayNameFor(model => model.Sample.ProcessingFunction)</dt>
-                  <dd>@Html.DisplayFor(model => model.Sample.ProcessingFunction)</dd>
-                  <dt>@Html.DisplayNameFor(model => model.Sample.InjectionId)</dt>
-                  <dd>@Html.DisplayFor(model => model.Sample.InjectionId)</dd>
-              </dl>
-          </div>
-          <br /><br />
+<div id="sampleDetails">
+    <h3 class="text-primary">Sample Details</h3>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>@Html.DisplayNameFor(model => model.Sample.Id)</dt>
+        <dd>@Html.DisplayFor(model => model.Sample.Id)</dd>
+        <dt>@Html.DisplayNameFor(model => model.Sample.Name)</dt>
+        <dd>@Html.DisplayFor(model => model.Sample.Name)</dd>
+        <dt>@Html.DisplayNameFor(model => model.Sample.Description)</dt>
+        <dd>@Html.DisplayFor(model => model.Sample.Description)</dd>
+        <dt>@Html.DisplayNameFor(model => model.Sample.SampleType)</dt>
+        <dd>@Html.DisplayFor(model => model.Sample.SampleType)</dd>
+        <dt>@Html.DisplayNameFor(model => model.Sample.AcquisitionStartTime)</dt>
+        <dd>@Html.DisplayFor(model => model.Sample.AcquisitionStartTime)</dd>
+        <dt>@Html.DisplayNameFor(model => model.Sample.WellPosition)</dt>
+        <dd>@Html.DisplayFor(model => model.Sample.WellPosition)</dd>
+        <dt>@Html.DisplayNameFor(model => model.Sample.InjectionVolume)</dt>
+        <dd>@Html.DisplayFor(model => model.Sample.InjectionVolume)</dd>
+        <dt>@Html.DisplayNameFor(model => model.Sample.ProcessingOptions)</dt>
+        <dd>@Html.DisplayFor(model => model.Sample.ProcessingOptions)</dd>
+        <dt>@Html.DisplayNameFor(model => model.Sample.ProcessingFunction)</dt>
+        <dd>@Html.DisplayFor(model => model.Sample.ProcessingFunction)</dd>
+        <dt>@Html.DisplayNameFor(model => model.Sample.InjectionId)</dt>
+        <dd>@Html.DisplayFor(model => model.Sample.InjectionId)</dd>
+    </dl>
+</div>
+
+<div id="components">
+    <h3 class="text-primary">Components</h3>
+    <hr />
+    @{ Html.RenderPartial("~/Views/Home/_Components.cshtml", Model.Components); }
+</div>
+
+<div id="mzmlConvertInfo">
+    <h3 class="bg-primary">The current result contains <b>@Model.IdentifiedSpectraCount</b> mass spectra.</h3>
+    <p style="margin-left: 10px;"><em>Please note that the MzML conversion is processing about 3500 scans per hour!</em></p>
+</div>
+
+<br /><br />
                 <div>
                     @if(Model.MzmlFileExistsOnServer)
                     {
@@ -71,32 +83,33 @@
                     }                    
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <a asp-action="Index" class="btn btn-primary glyphicon ">Back to Folders</a>
-                    
-                    
-                    
                 </div>
 
 @section Scripts
 {
     <script type="text/javascript">
 
-        $('#convertButton').click(function () {
-            waitingDialog.show('Convert to MzML. This might take up to an hour...\n The generated file size usually is very large.');
-            setTimeout(function () { waitingDialog.hide(); }, 15000);
+        $(document).ready(function() {
 
-            @*var link = "@Url.Action("ConvertToMzML", "Home", new { resultId = Model.Id })";            
-             $.ajax(link)
-                 .done(function (resp) {
-                     $(resp).modal.show();
-                })
-                 .fail(function (error) {
-                     alert(error);
-                    console.log(error);
-                });*@
-        });
+            $('#convertButton').click(function() {
+                waitingDialog.show(
+                    'Convert to MzML. This might take up to several hours...\n The generated file size usually is very large.');
+                setTimeout(function() { waitingDialog.hide(); }, 15000);
+            });
 
-        $(function() {
-            $('[data-toggle="tooltip"]').tooltip();
+            $(function() {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+
+            $('.panel-collapse').on('show.bs.collapse',
+                function() {
+                    $(this).siblings('.panel-heading').addClass('active');
+                });
+
+            $('.panel-collapse').on('hide.bs.collapse',
+                function() {
+                    $(this).siblings('.panel-heading').removeClass('active');
+                });
         });
 
     </script>

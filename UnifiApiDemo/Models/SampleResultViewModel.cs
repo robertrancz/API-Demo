@@ -16,5 +16,9 @@ namespace UnifiApiDemo.Models
         public Business.Model.Sample Sample { get; internal set; }
 
         public bool MzmlFileExistsOnServer { get; internal set; }
+
+        public List<ComponentViewModel> Components { get; set; }
+
+        public int IdentifiedSpectraCount { get; set; }
     }
 }

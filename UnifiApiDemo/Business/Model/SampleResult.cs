@@ -11,8 +11,8 @@ namespace UnifiApiDemo.Business.Model
     {
         public SampleResult()
         {
-            //Components = new List<Component>();
-            //DynamicProperties = new Dictionary<string, object>();
+            Components = new List<Component>();
+            DynamicProperties = new Dictionary<string, object>();
         }
 
         #region Properties to be filled when the model is retrieved

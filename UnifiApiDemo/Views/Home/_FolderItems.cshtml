@@ -4,7 +4,7 @@
 
 @if (Model != null && Model.Any())
 {
-    <h2>Selected folder items</h2>
+    <h2 class="text-primary">Selected folder items</h2>
     <table class="table">
         <thead>
             <tr>
@@ -51,3 +51,11 @@
         </tbody>
     </table>   
 }
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".btn.btn-primary").click(function() {
+            waitingDialog.show("Loading...");
+        });
+    });
+</script>

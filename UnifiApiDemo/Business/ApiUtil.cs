@@ -70,14 +70,11 @@ namespace UnifiApiDemo.Business
 
             //--- if the response contains an array of objects, look for the "value" property
             JObject jObject = JObject.Parse(json);
-            if (jObject != null)
-            {
-                JToken value = jObject["value"];
-                if (value != null && value is JArray)
-                    text = value.ToString();
-            }
+            JToken value = jObject?["value"];
+            if (value != null && value is JArray)
+                text = value.ToString();
 
-            //--- now we can use JsonConvert to deserialize the string
+            //--- now we can use JsonConvert to deserialize the json string
             return JsonConvert.DeserializeObject<T>(text);
         }
     }

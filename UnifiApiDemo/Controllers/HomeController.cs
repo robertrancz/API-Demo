@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+
 using UnifiApiDemo.Business;
 using UnifiApiDemo.Business.Model;
 using UnifiApiDemo.Models;
@@ -26,7 +25,6 @@ namespace UnifiApiDemo.Controllers
 
         public IActionResult Index()
         {
-            var folders = new FoldersApiClient().GetFolders();
             return View();
         }
 
@@ -89,7 +87,7 @@ namespace UnifiApiDemo.Controllers
             return folders?.Where(l => l.ParentId == parentId)
                 .Select(l => new FolderViewModel
                 {
-                    Text = l.Path.Substring(l.Path.LastIndexOf("/") + 1),
+                    Text = l.Path.Substring(l.Path.LastIndexOf("/", StringComparison.Ordinal) + 1),
                     Id = l.Id,
                     ParentId = l.ParentId,
                     Children = GetChildren(folders, l.Id)
@@ -99,9 +97,8 @@ namespace UnifiApiDemo.Controllers
         public PartialViewResult GetFolderItems(string folderId)
         {
             var folderItems = new List<Item>();
-            Guid result = Guid.Empty;
 
-            if (Guid.TryParse(folderId, out result))
+            if (Guid.TryParse(folderId, out var result))
             {
                 folderItems = new FoldersApiClient().GetItems(result).Result;
             }
@@ -111,7 +108,28 @@ namespace UnifiApiDemo.Controllers
 
         public async Task<IActionResult> SampleResult(Guid resultId)
         {
-            var sampleResult = await new SampleResultsApiClient().GetSampleResult(resultId);
+            var client = new SampleResultsApiClient();
+
+            var sampleResult = await client.GetSampleResult(resultId);
+            var components = await client.GetIdentifiedComponents(resultId);
+            var spectraCount = await client.GetAccurateMseSpectraCount(resultId);
+
+            List<ComponentViewModel> componentsViewModel = new List<ComponentViewModel>();
+            foreach (var component in components)
+            {
+                componentsViewModel.Add(new ComponentViewModel()
+                {
+                    Id = component.Id,
+                    ComponentStatus = component.ComponentStatus.ToString(),
+                    Name = component.Name,
+                    Charge = component.Charge,
+                    Comment = component.Comment,
+                    Formula = component.Formula,
+                    Label = component.Label,
+                    MonoisotopicMolarMass = component.MonoisotopicMolarMass,
+                    ParentId = component.ParentId
+                });
+            }
 
             var model = new SampleResultViewModel()
             {
@@ -119,9 +137,10 @@ namespace UnifiApiDemo.Controllers
                 Description = sampleResult.Description,
                 Name = sampleResult.Name,
                 Sample = sampleResult.Sample,
-                MzmlFileExistsOnServer = System.IO.File.Exists(Path.Combine(hostingEnvironment.ContentRootPath, $"Downloads\\{sampleResult.Name}.mzml"))
+                MzmlFileExistsOnServer = System.IO.File.Exists(Path.Combine(hostingEnvironment.ContentRootPath, $"Downloads\\{sampleResult.Name}.mzml")),
+                Components = componentsViewModel,
+                IdentifiedSpectraCount = spectraCount
             };
-            
 
             return View(model);
         }
@@ -187,7 +206,7 @@ namespace UnifiApiDemo.Controllers
             }
             finally
             {
-                msConvertProcess?.Close();
+                msConvertProcess.Close();
             }            
 
             return PartialView("~/Views/Home/_ModalWindow.cshtml", model);
