@@ -111,13 +111,14 @@ namespace UnifiApiDemo.Controllers
             var client = new SampleResultsApiClient();
 
             var sampleResult = await client.GetSampleResult(resultId);
+            var analyses = await client.GetAnalyses(resultId);
             var components = await client.GetIdentifiedComponents(resultId);
             var spectraCount = await client.GetAccurateMseSpectraCount(resultId);
 
-            List<ComponentViewModel> componentsViewModel = new List<ComponentViewModel>();
+            var componentsModel = new List<ComponentViewModel>();
             foreach (var component in components)
             {
-                componentsViewModel.Add(new ComponentViewModel()
+                componentsModel.Add(new ComponentViewModel()
                 {
                     Id = component.Id,
                     ComponentStatus = component.ComponentStatus.ToString(),
@@ -131,15 +132,30 @@ namespace UnifiApiDemo.Controllers
                 });
             }
 
+            var analysesModel = new List<AnalysisViewModel>();
+            foreach (var analysis in analyses)
+            {
+                analysesModel.Add(new AnalysisViewModel
+                {
+                    Id = analysis.Id,
+                    Name = analysis.Name,
+                    Description = analysis.Description,
+                    LimitStatus = analysis.Status.LimitStatus.ToString(),
+                    ManuallyModified = analysis.Status.ManuallyModified,
+                    SampleAltered = analysis.Status.SampleAltered
+                });
+            }
+
             var model = new SampleResultViewModel()
             {
                 Id = sampleResult.Id,
                 Description = sampleResult.Description,
                 Name = sampleResult.Name,
                 Sample = sampleResult.Sample,
-                MzmlFileExistsOnServer = System.IO.File.Exists(Path.Combine(hostingEnvironment.ContentRootPath, $"Downloads\\{sampleResult.Name}.mzml")),
-                Components = componentsViewModel,
-                IdentifiedSpectraCount = spectraCount
+                MzmlFileExistsOnServer = System.IO.File.Exists(Path.Combine(hostingEnvironment.ContentRootPath, $"Downloads\\{sampleResult.Name.Replace('/', '_')}.mzml")),
+                Components = componentsModel,
+                IdentifiedSpectraCount = spectraCount,
+                Analyses = analysesModel
             };
 
             return View(model);

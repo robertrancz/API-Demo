@@ -7,7 +7,7 @@ using UnifiApiDemo.Business.Model.Spectra;
 
 namespace UnifiApiDemo.Business.Model
 {
-    public class SampleResult : ItemBase
+    public class SampleResult
     {
         public SampleResult()
         {

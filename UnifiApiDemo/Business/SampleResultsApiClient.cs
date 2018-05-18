@@ -146,5 +146,32 @@ namespace UnifiApiDemo.Business
             var chromatogramInfos = api.Deserialize<List<ChromatogramInfo>>(json);
             return chromatogramInfos;
         }
+
+        public async Task<List<Analysis>> GetAnalyses(Guid resultId)
+        {
+            if (resultId == Guid.Empty)
+            {
+                throw new ArgumentException("The result ID parameter is required!", nameof(resultId));
+            }
+
+            ApiUtil api = new ApiUtil();
+            var url = api.GetEndpointUrl("sampleresults", resultId, "analyses");
+            HttpClient httpClient = await api.GetAuthorizedClient();
+            httpClient.DefaultRequestHeaders.Remove("Accept");
+            httpClient.DefaultRequestHeaders.Add("Accept", "application/json;odata.metadata=full");
+
+            var response = await httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(response.StatusCode);
+                return null;
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var analysisList = api.Deserialize<List<Analysis>>(json);
+            return analysisList;
+        }
     }
 }

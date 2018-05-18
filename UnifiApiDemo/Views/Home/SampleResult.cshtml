@@ -58,6 +58,12 @@
     </dl>
 </div>
 
+<div id="analyses">
+    <h3 class="text-primary">Sample Result Analyses</h3>
+    <hr />
+    @{ Html.RenderPartial("~/Views/Home/_Analyses.cshtml", Model.Analyses); }
+</div>
+
 <div id="components">
     <h3 class="text-primary">Components</h3>
     <hr />

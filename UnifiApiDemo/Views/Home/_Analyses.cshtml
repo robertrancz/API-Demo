@@ -1,0 +1,70 @@
+﻿@model IEnumerable<UnifiApiDemo.Models.AnalysisViewModel>
+<div></div>
+<div class="panel-group" id="analysesAccordion" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#analysesAccordion" href="#collapseAnalyses">Toggle Analyses</a>
+            </h4>
+        </div>
+        <div id="collapseAnalyses" class="panel-collapse collapse">
+            <div class="panel-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Id)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Description)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.LimitStatus)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ManuallyModified)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.SampleAltered)
+                        </th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Description)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.LimitStatus)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ManuallyModified)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.SampleAltered)
+                            </td>
+                            <td>
+                                @*@Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })*@
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

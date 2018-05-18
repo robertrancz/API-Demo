@@ -20,5 +20,7 @@ namespace UnifiApiDemo.Models
         public List<ComponentViewModel> Components { get; set; }
 
         public int IdentifiedSpectraCount { get; set; }
+
+        public List<AnalysisViewModel> Analyses { get; set; }
     }
 }
